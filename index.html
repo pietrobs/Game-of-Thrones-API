@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Game Of Thrones</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+        }
+
+        h1,
+        p,
+        div,
+        span {
+            margin: 5px;
+            padding: 5px;
+        }
+
+        .pageTitle{
+            color: white;
+            text-align: center;
+            font-size: 44pt;
+        }
+
+        body {
+            background-image: url("http://cdn1.vox-cdn.com/assets/4229567/game-of-thrones-poster_85627-1920x1200.jpg");
+            background-size: 100%;
+            background-position: fixed;
+            min-height: 100vh;
+            min-width: 100vw;
+        }
+
+        .personagem {
+            position: relative;
+            float: left;
+            background: rgba(0, 0, 0, .8);
+            width: 30%;
+            color: white;
+            margin: 20px;
+            padding: 10px;
+            border: 1px solid white;
+        }
+
+        .personagem img {
+            float: left;
+            height: 200px;
+            margin: 10px;
+        }
+
+        .titulos {
+            font-size: 12pt;
+            padding: 3px 5px;
+            margin: 5px 3px;
+        }
+    </style>
+</head>
+
+<body>
+    <h1 class="pageTitle">Personagens de GOT</h1>
+    <div id="show"></div>
+</body>
+
+</html>
+
+<script>
+
+    // Quando a página carrega, os personagens já são carregados! 
+    document.onload = listarPersonagens();
+
+
+    // Função responsável por gerar o HTML com os personagens e coloca-lo na tela
+    async function listarPersonagens() {
+        const personagens = await pedirDadosDaApi();
+
+        let html = '';
+
+        personagens.forEach((personagem) => {
+
+            // Aqui você pode ir fazendo os testes
+            // if (personagem.name.length == 10) {      // Personagens com o nome com 10 letras
+            // if(personagem.titles.length == 0){       // Personagens que não possuem titulos
+            if (true) {
+
+                let titulos = gerarTitulos(personagem.titles);
+
+                html +=
+                    `
+                <div class="personagem">
+                    <img src="${personagem.image}" />
+                    <h1>${personagem.name}</h1>
+                    <div class="titulos">${titulos}</div>
+                </div>
+                    `;
+
+            }
+        });
+
+        document.getElementById('show').innerHTML = html;
+
+    }
+
+    // Função responsável por gerar os títulos
+    function gerarTitulos(titles) {
+        let titulos = 'TITULOS: ';
+
+        // Se não tiver nenhum título
+        if (titles.length == 0) {
+            titulos += 'Um bosta';
+        } else {
+
+            titles.forEach((titulo) => {
+                titulos += `, ${titulo}`;
+            });
+
+            titulos = titulos.replace(',', ''); //alterando a primeira virgula encontrada por um caractere em branco
+        }
+
+        return titulos;
+    }
+
+
+    // Função responsável por pegar os personagens da API e retornar para a função de listagem, não é necessário entender
+    // Para os curiosos, conceitos envolvidos:
+    // - Requisições HTTP
+    // - Async/Await
+    // - Promise
+    // - JSON
+    function pedirDadosDaApi() {
+        return new Promise((resolve) => {
+            const Http = new XMLHttpRequest();
+            const url = 'https://api.got.show/api/show/characters';
+            Http.open("GET", url, true);
+            Http.send();
+
+            Http.onreadystatechange = (e) => {
+                resolve(JSON.parse(Http.responseText));
+            }
+        })
+    }
+
+</script>
